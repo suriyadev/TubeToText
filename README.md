@@ -1,24 +1,10 @@
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-# Create a Java Web Application using Embedded Tomcat
+ 
+# TubeToText API to get Youtube Video Captions in a simple way  
 
-This tutorial will show you how to create a simple Java web application using embedded Tomcat.
+## Request 
 
-## Prerequisites
+* http://<application-host>/url?<Youtube-video-url>
+ 
+## Response
 
-* Basic Java knowledge, including an installed version of the JVM and Maven.
-* Basic Git knowledge, including an installed version of Git.
-* A Java web application. If you don't have one follow the first step to create an example. Otherwise skip that step.
-
-## Skip The Application Creation
-
-If you want to skip the creation steps you can clone the finished sample and then skip to the 'Deploy Your Application to Heroku' section:
-
-```
-$ git clone git@github.com:heroku/devcenter-embedded-tomcat.git
-```
-
-## Follow the Guide
-
-If you would like to create the application yourself, then follow the Dev Center guide on how to [Create a Java Web Application using Embedded Tomcat](https://devcenter.heroku.com/articles/create-a-java-web-application-using-embedded-tomcat).
-
-
+" Linux is free  open-source   comes up with  lots of  different software   everything is   open-source is compatible   with a   lot of   low-end hardware's   and doesn't require   antivirus   but   these are the reasons  which you read in every  single blog  which say  stuff five   reasons to learn  about Linux  top   ten reasons to learn   Linux and all such crappy blogs that you   read around but these reasons definitely  are  not at all convincing enough   to make  sure  that you get started   to learn Linux   but in this video I'm going to ...."
