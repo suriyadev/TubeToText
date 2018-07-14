@@ -3,7 +3,7 @@
 
 ## Request 
 
-* http://<application-host>/url?<Youtube-video-url>
+* http://application-host/url?Youtube-video-url
  
 ## Response
 
