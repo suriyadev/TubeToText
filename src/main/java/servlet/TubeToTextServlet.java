@@ -29,7 +29,7 @@ import org.jsoup.select.Elements;
         name = "tubetotext", 
         urlPatterns = {"/"}
     )
-public class HelloServlet extends HttpServlet {
+public class TubeToTextServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
