@@ -25,153 +25,134 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-@WebServlet(
-        name = "tubetotext", 
-        urlPatterns = {"/"}
-    )
+@WebServlet(name = "tubetotext", urlPatterns = { "/" })
 public class TubeToTextServlet extends HttpServlet {
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-    	   List languages;
-   		
-		   String videoURL = request.getParameter("url");
- 
-	         Map<String, String> result = new HashMap<String, String>();
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 
-	         result.put("videoId", videoURL);
+		final List languages;
+		final Map<String, String> result = new HashMap<String, String>();
 
-	         try {
+		String videoURL = request.getParameter("url");
 
-	             Document doc;
-	             doc = Jsoup.connect(videoURL).get();
+		result.put("videoId", videoURL);
 
-	             Elements newsHeadlines = doc.select("script");
+		try {
 
-	             result.put("title", doc.title());
+			Document doc;
+			doc = Jsoup.connect(videoURL).get();
 
-	             String captionUrl = "";
-	             languages = new ArrayList<String>();
+			Elements newsHeadlines = doc.select("script");
 
-	             for (Element headline : newsHeadlines) {
+			result.put("title", doc.title());
 
-	                 if (headline.data().contains("player_response") == true) {
+			String captionUrl = "";
+			languages = new ArrayList<String>();
 
-	                     String value = headline.data();
+			for (Element headline : newsHeadlines) {
 
-	                     int i = value.indexOf("{\"");
+				if (headline.data().contains("player_response") == true) {
 
-	                     value = value.substring(i);
+					String value = headline.data();
 
-	                     JSONObject jsonObj = new JSONObject(value.substring(0, value.indexOf("ytplayer.load")));
+					int i = value.indexOf("{\"");
 
-	                     JSONObject j2 = new JSONObject(jsonObj.get("args").toString());
-	                     JSONObject j5 = new JSONObject(j2.get("player_response").toString());
-	                     JSONObject j3 = new JSONObject(j5.get("captions").toString());
-	                     JSONObject j4 = new JSONObject(j3.get("playerCaptionsTracklistRenderer").toString());
-	                     JSONArray resultCaptions = new JSONArray(j4.get("captionTracks").toString());
+					value = value.substring(i);
 
+					JSONObject jsonObj = new JSONObject(value.substring(0, value.indexOf("ytplayer.load")));
 
-	                     captionUrl = new JSONObject(resultCaptions.get(0).toString()).get("baseUrl").toString();
+					JSONObject j2 = new JSONObject(jsonObj.get("args").toString());
+					JSONObject j5 = new JSONObject(j2.get("player_response").toString());
+					JSONObject j3 = new JSONObject(j5.get("captions").toString());
+					JSONObject j4 = new JSONObject(j3.get("playerCaptionsTracklistRenderer").toString());
+					JSONArray resultCaptions = new JSONArray(j4.get("captionTracks").toString());
 
-	                     for(int j = 0 ; i < resultCaptions.length();j++) {
-	                         languages.add(new JSONObject(resultCaptions.get(j).toString()).get("languageCode").toString());
-	                     }
+					captionUrl = new JSONObject(resultCaptions.get(0).toString()).get("baseUrl").toString();
 
-	                     result.put("text", captionUrl);
+					for (int j = 0; i < resultCaptions.length(); j++) {
+						languages.add(new JSONObject(resultCaptions.get(j).toString()).get("languageCode").toString());
+					}
 
-	                  
-	                     break;
-	                 }
+					result.put("text", captionUrl);
 
-	             }
+					break;
+				}
 
-	         } catch (Exception e1) {
-	             // TODO Auto-generated catch block
-	        	   result.put("text", "No Captions Found for this Video");
+			}
 
-	         }
+		} catch (Exception e1) {
+			 
+			result.put("text", "No Captions Found for this Video");
 
-	         Map res =  result;
-	         String xmlDataUrI = "";
-	         ByteArrayOutputStream outstream;
+		}
 
-	         URLConnection conn;
-	         try {
-	             conn = new URL(res.get("text").toString()).openConnection();
+		Map res = result;
+		String xmlDataUrI = "";
+		ByteArrayOutputStream outstream;
 
-	             InputStream is = conn.getInputStream();
+		URLConnection conn;
+		try {
+			conn = new URL(res.get("text").toString()).openConnection();
 
-	             outstream = new ByteArrayOutputStream();
+			InputStream is = conn.getInputStream();
 
-	             byte[] buffer = new byte[4096];
-	             int len;
+			outstream = new ByteArrayOutputStream();
 
-	             while ((len = is.read(buffer)) > 0) {
-	                 outstream.write(buffer, 0, len);
-	             }
-	             outstream.close();
+			byte[] buffer = new byte[4096];
+			int len;
 
-	             xmlDataUrI = new String(outstream.toByteArray(), "UTF-8");
+			while ((len = is.read(buffer)) > 0) {
+				outstream.write(buffer, 0, len);
+			}
+			outstream.close();
 
-	         } catch (MalformedURLException e) { // TODO Auto-generated catch block
-	     		response.getWriter().append("No Captions Found for this Video");
-	        	 } catch (IOException e) { // TODO Auto-generated catch
-	        		 response.getWriter().append("No Captions Found for this Video");
-	 	        	 //e.printStackTrace();
-	         }
+			xmlDataUrI = new String(outstream.toByteArray(), "UTF-8");
 
-	         String uri = xmlDataUrI;
+		} catch (MalformedURLException e) {  
+			response.getWriter().append("No Captions Found for this Video");
+		} catch (IOException e) { 
+			response.getWriter().append("No Captions Found for this Video");
+			 
+		}
 
-	         String s = "";
-	         try {
-	             List<String> lines = new ArrayList();
-	             JSONObject xmlJSONObj = XML.toJSONObject(uri);
+		String uri = xmlDataUrI;
 
-	             JSONObject jj = new JSONObject(xmlJSONObj.get("transcript").toString());
+		String s = "";
+		try {
+			List<String> lines = new ArrayList();
+			JSONObject xmlJSONObj = XML.toJSONObject(uri);
 
-	             JSONArray array = new JSONArray(jj.get("text").toString());
+			JSONObject jj = new JSONObject(xmlJSONObj.get("transcript").toString());
 
+			JSONArray array = new JSONArray(jj.get("text").toString());
 
+			for (int i = 0; i < array.length(); i++) {
+				JSONObject job = new JSONObject(array.get(i).toString());
 
-	             for (int i = 0 ; i < array.length();i++) {
-	                 JSONObject job = new JSONObject(array.get(i).toString());
+				String temp = job.get("content").toString() + " ";
+				lines.add(temp);
+				s += temp;
 
-	                 String temp = job.get("content").toString() + " ";
-	                 lines.add(temp);
-	                 s += temp;
+			}
 
-	             }
+			s = s.replaceAll("#CCCCCC", "#000000");
 
-	             s = s.replaceAll("#CCCCCC", "#000000");
+			s = s.replaceAll("#E5E5E5", "#000000");
 
-	             s = s.replaceAll("#E5E5E5", "#000000");
+			s = s.replaceAll("<font color=\"#000000\">", " ");
 
-	             s = s.replaceAll("<font color=\"#000000\">", " ");
+			s = s.replaceAll("</font>", " ");
 
-	             s = s.replaceAll("</font>", " ");
+			s = s.replaceAll("&#39;", "'");
+		} catch (Exception e) {
+				response.getWriter().append("No Captions Found for this Video");
 
-	             s = s.replaceAll("&#39;", "'");
-	         }catch (Exception e){
-	        	 
-	        	 response.getWriter().append("No Captions Found for this Video");
-		        	
-	        	 
-	         }
+		}
 
-		
-		
-		
 		response.getWriter().append(s);
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    	
-    }
-    
+
+	}
+
 }
