@@ -5,6 +5,8 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.apache.tomcat.util.descriptor.web.FilterDef;
+import org.apache.tomcat.util.descriptor.web.FilterMap;
 import org.apache.catalina.WebResourceRoot;
 import org.apache.catalina.WebResourceSet;
 import org.apache.catalina.core.StandardContext;
@@ -58,6 +60,16 @@ public class Main {
         //Set execution independent of current thread context classloader (compatibility with exec:java mojo)
         ctx.setParentClassLoader(Main.class.getClassLoader());
 
+FilterDef filterDef = new FilterDef();
+filterDef.setFilterName("CorsFilter");
+filterDef.setFilterClass("org.apache.catalina.filters.CorsFilter");
+FilterMap filterMap = new FilterMap();
+filterMap.setFilterName("CorsFilter");
+filterMap.addURLPattern("/*");
+ctx.addFilterDef(filterDef);
+ctx.addFilterMap(filterMap);
+
+
         System.out.println("configuring app with basedir: " + webContentFolder.getAbsolutePath());
 
         // Declare an alternative location for your "WEB-INF/classes" dir
@@ -79,3 +91,4 @@ public class Main {
         tomcat.getServer().await();
     }
 }
+
